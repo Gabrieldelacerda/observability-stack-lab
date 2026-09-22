@@ -1,0 +1,59 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: logging-alerts
+    folder: Logging
+    interval: 30s
+    rules:
+      - uid: nginx-5xx-errors
+        title: Nginx 5xx Errors
+        condition: B
+
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: loki
+            model:
+              editorMode: code
+              expr: 'sum(count_over_time({job="fluent-bit",status=~"5.."}[1m]))'
+              queryType: instant
+              refId: A
+
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: B
+              type: threshold
+
+        noDataState: OK
+        execErrState: Error
+        for: 0s
+        annotations:
+          summary: Nginx returned one or more 5xx responses in the last minute.
+        labels:
+          severity: warning
+        isPaused: false
