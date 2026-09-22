@@ -1,28 +1,27 @@
-# Observability Lab
+# Observability Stack Lab
 
-Third project in a series focused on building a complete DevOps pipeline. The first two projects covered infrastructure provisioning and CI/CD automation. This one closes the cycle by adding visibility into what's actually running.
+This project is a small observability environment built with Prometheus, Grafana, Node Exporter and cAdvisor.
 
-## What it does
+Prometheus collects metrics from the host and from running containers. Node Exporter is configured to read CPU, memory and filesystem data from the host VM, while cAdvisor provides container-level metrics.
 
-Collects metrics from the VM and containers, stores them in Prometheus, and visualizes everything in Grafana. Also includes an alert rule that fires when CPU usage exceeds 80% for more than a minute.
+Grafana is provisioned automatically when the stack starts. The Prometheus datasource, System Overview dashboard and CPU alert rule are all stored in the repository, so the environment can be recreated without configuring Grafana manually.
 
-## Stack
+The dashboard includes CPU usage, memory usage, root filesystem usage and the number of active Prometheus targets.
 
-- **Prometheus** — scrapes and stores metrics
-- **Grafana** — dashboards and alert rules
-- **Node Exporter** — exposes VM-level metrics (CPU, RAM, disk)
-- **cAdvisor** — exposes container-level metrics
+A Grafana alert rule monitors host CPU usage and enters a pending state when usage is above 80%. It fires if that condition remains true for more than one minute.
 
-## Running locally
+The stack uses fixed image versions and persistent Docker volumes for Prometheus and Grafana data.
 
-```bash
+To run it:
+
 cd monitoring
 docker compose up -d
-```
 
-Grafana runs on port 3000, Prometheus on 9090, cAdvisor on 8080.
+Services:
 
-## Related projects
+Grafana: http://localhost:3000
+Prometheus: http://localhost:9090
+cAdvisor: http://localhost:8080
+Node Exporter: http://localhost:9100
 
-- [Project 1 — nginx-multisite-lab](https://github.com/Gabrieldelacerda/nginx-multisite-lab)
-- [Project 2 — cicd-pipeline-aws](https://github.com/Gabrieldelacerda/cicd-pipeline-aws)
+The screenshots folder contains examples from previous validation of the monitoring stack and Grafana dashboards.
